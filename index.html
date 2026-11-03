@@ -372,5 +372,54 @@ window.addEventListener("pagehide", () => {
   if (running) stopMonitor();
 });
 </script>
+  <script>
+window.beep = function () {
+  if (!("speechSynthesis" in window)) {
+    return;
+  }
+
+  const now = performance.now();
+
+  // 避免连续不断地重复说话
+  if (now - (window.beep.lastTime || 0) < 2800) {
+    return;
+  }
+
+  window.beep.lastTime = now;
+
+  const synth = window.speechSynthesis;
+  synth.cancel();
+
+  const msg = new SpeechSynthesisUtterance("声音大点");
+
+  // 中文普通话
+  msg.lang = "zh-CN";
+  msg.rate = 0.9;
+  msg.pitch = 1;
+  msg.volume = Number(volume.value) / 100;
+
+  // 优先选择中文语音
+  const voices = synth.getVoices();
+  const chineseVoice = voices.find(v =>
+    v.lang.toLowerCase().startsWith("zh")
+  );
+
+  if (chineseVoice) {
+    msg.voice = chineseVoice;
+  }
+
+  // 防止平板把自己的提示语当成孩子的朗读
+  msg.onstart = () => {
+    ignoreUntil = performance.now() + 2000;
+  };
+
+  msg.onend = () => {
+    ignoreUntil = performance.now() + 300;
+  };
+
+  synth.speak(msg);
+  ignoreUntil = performance.now() + 1600;
+};
+  </script>
 </body>
   </html>
