@@ -166,9 +166,9 @@ function beep() {
   const now = context.currentTime;
   const osc = context.createOscillator();
   const gain = context.createGain();
-  osc.type = "sine";
+  osc.type = "square";
   osc.frequency.value = 720;
-  const v = Number(volume.value) / 100 * 0.25;
+  const v = Number(volume.value) / 100 * 0.7;
   gain.gain.setValueAtTime(0.0001, now);
   gain.gain.exponentialRampToValueAtTime(Math.max(v,0.001), now+0.025);
   gain.gain.exponentialRampToValueAtTime(0.0001, now+0.2);
